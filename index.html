@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание 7 класс — углубление физхиммат</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #e2e8f0;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .subtitle span {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .schedule {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .day {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .day:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .day-header {
+            padding: 14px 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .day:nth-child(1) .day-header { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .day:nth-child(2) .day-header { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .day:nth-child(3) .day-header { background: linear-gradient(135deg, #10b981, #059669); }
+        .day:nth-child(4) .day-header { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .day:nth-child(5) .day-header { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .lesson {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            margin: 6px 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid transparent;
+            transition: background 0.2s ease, border-color 0.2s ease;
+            font-size: 0.88rem;
+        }
+
+        .lesson:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .num {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .name {
+            color: #e2e8f0;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        /* Цветовые маркеры для типов предметов */
+        .lesson.physics { border-left-color: #38bdf8; }
+        .lesson.physics .num { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+
+        .lesson.chem { border-left-color: #a78bfa; }
+        .lesson.chem .num { background: rgba(167, 139, 250, 0.2); color: #a78bfa; }
+
+        .lesson.math { border-left-color: #f472b6; }
+        .lesson.math .num { background: rgba(244, 114, 182, 0.2); color: #f472b6; }
+
+        .lesson.it { border-left-color: #34d399; }
+        .lesson.it .num { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+
+        .lesson.human { border-left-color: #fbbf24; }
+        .lesson.human .num { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+
+        .lesson.lang { border-left-color: #f87171; }
+        .lesson.lang .num { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+
+        .lesson.bio-geo { border-left-color: #4ade80; }
+        .lesson.bio-geo .num { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 20px;
+            margin-top: 28px;
+            max-width: 900px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #94a3b8;
+            font-size: 0.82rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.physics { background: #38bdf8; }
+        .legend-dot.chem { background: #a78bfa; }
+        .legend-dot.math { background: #f472b6; }
+        .legend-dot.it { background: #34d399; }
+        .legend-dot.human { background: #fbbf24; }
+        .legend-dot.lang { background: #f87171; }
+        .legend-dot.bio-geo { background: #4ade80; }
+
+        .stats {
+            margin-top: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            max-width: 900px;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: #cbd5e1;
+            font-size: 0.82rem;
+        }
+
+        .stat b {
+            color: #38bdf8;
+            font-weight: 700;
+        }
+
+        @media (max-width: 900px) {
+            .schedule {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 550px) {
+            .schedule {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📚 Расписание 7 класса</h1>
+    <p class="subtitle">Углублённое изучение <span>физики · химии · математики</span></p>
+
+    <div class="schedule">
+
+        <!-- ПОНЕДЕЛЬНИК -->
+        <div class="day">
+            <div class="day-header">Понедельник</div>
+            <div class="lesson math">
+                <div class="num">1</div>
+                <div class="name">Алгебра</div>
+            </div>
+            <div class="lesson physics">
+                <div class="num">2</div>
+                <div class="name">Физика</div>
+            </div>
+            <div class="lesson lang">
+                <div class="num">3</div>
+                <div class="name">Русский язык</div>
+            </div>
+            <div class="lesson human">
+                <div class="num">4</div>
+                <div class="name">История</div>
+            </div>
+            <div class="lesson lang">
+                <div class="num">5</div>
+                <div class="name">Англ яз</div>
+            </div>
+        </div>
+
+        <!-- ВТОРНИК -->
+        <div class="day">
+            <div class="day-header">Вторник</div>
+            <div class="lesson chem">
+                <div class="num">1</div>
+                <div class="name">Химия</div>
+            </div>
+            <div class="lesson math">
+                <div class="num">2</div>
+                <div class="name">Геометрия</div>
+            </div>
+            <div class="lesson physics">
+                <div class="num">3</div>
+                <div class="name">Физика</div>
+            </div>
+            <div class="lesson bio-geo">
+                <div class="num">4</div>
+                <div class="name">Биология</div>
+            </div>
+            <div class="lesson human">
+                <div class="num">5</div>
+                <div class="name">Литература</div>
+            </div>
+        </div>
+
+        <!-- СРЕДА -->
+        <div class="day">
+            <div class="day-header">Среда</div>
+            <div class="lesson math">
+                <div class="num">1</div>
+                <div class="name">Алгебра</div>
+            </div>
+            <div class="lesson chem">
+                <div class="num">2</div>
+                <div class="name">Химия</div>
+            </div>
+            <div class="lesson it">
+                <div class="num">3</div>
+                <div class="name">Информатика</div>
+            </div>
+            <div class="lesson lang">
+                <div class="num">4</div>
+                <div class="name">Русский язык</div>
+            </div>
+            <div class="lesson bio-geo">
+                <div class="num">5</div>
+                <div class="name">География</div>
+            </div>
+        </div>
+
+        <!-- ЧЕТВЕРГ -->
+        <div class="day">
+            <div class="day-header">Четверг</div>
+            <div class="lesson physics">
+                <div class="num">1</div>
+                <div class="name">Физика</div>
+            </div>
+            <div class="lesson math">
+                <div class="num">2</div>
+                <div class="name">Геометрия</div>
+            </div>
+            <div class="lesson chem">
+                <div class="num">3</div>
+                <div class="name">Химия</div>
+            </div>
+            <div class="lesson lang">
+                <div class="num">4</div>
+                <div class="name">Англ яз</div>
+            </div>
+            <div class="lesson human">
+                <div class="num">5</div>
+                <div class="name">История</div>
+            </div>
+        </div>
+
+        <!-- ПЯТНИЦА -->
+        <div class="day">
+            <div class="day-header">Пятница</div>
+            <div class="lesson math">
+                <div class="num">1</div>
+                <div class="name">Вероятность и статистика</div>
+            </div>
+            <div class="lesson chem">
+                <div class="num">2</div>
+                <div class="name">Химия</div>
+            </div>
+            <div class="lesson it">
+                <div class="num">3</div>
+                <div class="name">Информатика</div>
+            </div>
+            <div class="lesson human">
+                <div class="num">4</div>
+                <div class="name">Литература</div>
+            </div>
+            <div class="lesson bio-geo">
+                <div class="num">5</div>
+                <div class="name">Биология</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ЛЕГЕНДА -->
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot physics"></div>Физика</div>
+        <div class="legend-item"><div class="legend-dot chem"></div>Химия</div>
+        <div class="legend-item"><div class="legend-dot math"></div>Математика</div>
+        <div class="legend-item"><div class="legend-dot it"></div>Информатика</div>
+        <div class="legend-item"><div class="legend-dot human"></div>Гуманитарные</div>
+        <div class="legend-item"><div class="legend-dot lang"></div>Языки</div>
+        <div class="legend-item"><div class="legend-dot bio-geo"></div>Биология / География</div>
+    </div>
+
+    <!-- СТАТИСТИКА -->
+    <div class="stats">
+        <div class="stat">Алгебра: <b>3</b></div>
+        <div class="stat">Геометрия: <b>2</b></div>
+        <div class="stat">Физика: <b>3</b></div>
+        <div class="stat">Химия: <b>3</b></div>
+        <div class="stat">Информатика: <b>2</b></div>
+        <div class="stat">Русский: <b>2</b></div>
+        <div class="stat">Литература: <b>2</b></div>
+        <div class="stat">История: <b>2</b></div>
+        <div class="stat">Англ яз: <b>2</b></div>
+        <div class="stat">Биология: <b>2</b></div>
+        <div class="stat">География: <b>1</b></div>
+        <div class="stat">Вероятность и статистика: <b>1</b></div>
+    </div>
+
+</body>
+</html>
